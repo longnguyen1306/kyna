@@ -1,7 +1,13 @@
+#folder source chưa chuyển
 IN="/data1/content/vod"
-OUT="/data1/content/game"
-declare -i COUNT_CONVERTED_FILE
 
+#folder xuất video
+OUT="/data1/content/game"
+
+#biến đếm
+declare -i COUNT_CONVERTED_FILE=0
+
+#scan folder source 
 scanFileInFolder() {
 	listDirectory=$(find $1 -type d)
 	for directory1 in $listDirectory; do
@@ -9,6 +15,7 @@ scanFileInFolder() {
 	done
 }
 
+#kiểm tra sự tồn tại của file ở folder xuất video
 checkFileExist(){
 	flag=0
 	inFileName=$(echo $1 | rev | cut -d "/" -f1 | rev)
@@ -24,6 +31,7 @@ checkFileExist(){
 	return $flag
 }
 
+#tiến hành convert file
 convertFile(){
     	ffmpeg -i  $1  -filter:v scale=$2 -c:a copy $3
 }
@@ -47,17 +55,6 @@ copyFile(){
             		echo "Parsing $file" >> kyna_logs.txt
 			convertFile $file $qlt $newFile
 			COUNT_CONVERTED_FILE=COUNT_CONVERTED_FILE+1
-		#	printf -v json -- '{ "video_link": "%s", "resolution_types": "%s"}' "$videoLink" "2"
-            		#resData=$(curl  -s -X POST -H 'Content-type: application/json'  -d "$json" 'https://forkid-api.kyna.vn/v1/guest/update-resolution-types' | python -c "import json,sys;obj=json.load(sys.stdin);print obj['success'];")
-            		#if [[ $resData == False ]]; then
-                	#	echo "=======================================================" >> kyna_errors.txt
-                	#	echo "update resolution_types of video_link $file error" >> kyna_errors.txt
-                	#	exit 1
-            		#fi
-            		#if [[ $COUNT_CONVERTED_FILE -eq 40 ]]; then
-                	#	exit 1
-            		#fi
-			
 		elif [[ $flag -eq 1 ]]; then
 			echo "Da ton tai " $inFileName
 		fi
